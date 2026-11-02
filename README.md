@@ -1,5 +1,7 @@
 # PromoPilot — 홈쇼핑 프로모션 순증 이익 시뮬레이터 (시제품)
 
+[![test](https://github.com/kimmh2142/promopilot/actions/workflows/test.yml/badge.svg)](https://github.com/kimmh2142/promopilot/actions/workflows/test.yml)
+
 > LOTTE AX Challenge 2026 · [과제 3] 롯데홈쇼핑 프로모션 시뮬레이터 지원용 시제품
 
 편성이 정해진 방송에서 **카드 할인 · 무이자 할부 · 사은품** 조합별로 예상 주문, 매출, **비용을 반영한 순증 이익**을 계산하고, 제약 조건 안에서 최적안을 추천합니다.

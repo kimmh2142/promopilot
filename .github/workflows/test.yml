@@ -1,0 +1,19 @@
+name: test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: 테스트 (파라미터 복원·편향·제약·외삽·입력 검증·수치 대조)
+        run: pytest -v
+      - name: 데모 실행
+        run: python demo.py
