@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PromoPilot 웹 데모 — 홈쇼핑 프로모션 순증 이익 시뮬레이터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2333;--sub:#5A6272;--line:#E1DDD3;--bg:#F6F5F1;--card:#FFFFFF;--blue:#2E5BA8;--blue-bg:#E9EEF6;--orange:#B4441A;--orange-bg:#FBE9DF}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 20px 64px}
+header p.eyebrow{color:var(--orange);font-weight:700;font-size:14px;margin:0 0 6px;letter-spacing:.5px}
+h1{font-size:30px;margin:0 0 8px}
+header p.lead{color:var(--sub);margin:0 0 24px;font-size:16px}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:20px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.card h2{font-size:17px;margin:0 0 14px}
+label.f{display:block;font-size:13px;color:var(--sub);margin:14px 0 6px}
+select,input[type=range]{width:100%}
+select{font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.rv{float:right;color:var(--ink);font-weight:700}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;font:inherit;font-size:14px;padding:8px 0;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+@media (max-width:560px){.metrics{grid-template-columns:1fr}}
+.m{background:var(--bg);border-radius:10px;padding:14px}
+.m .l{font-size:13px;color:var(--sub)}
+.m .v{font-size:24px;font-weight:700}
+.m .s{font-size:13px;color:var(--sub)}
+.warn{display:none;background:var(--orange-bg);color:var(--orange);border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:14px}
+.bar{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:14px}
+.bar .k{width:44px;color:var(--sub)}
+.bar .t{flex:1;height:16px;background:#F0EEE8;border-radius:4px;position:relative;overflow:hidden}
+.bar .t i{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.bar .n{min-width:150px;text-align:right}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+th{color:var(--sub);font-weight:500}
+tr.best td{background:var(--blue-bg);font-weight:700}
+.note{font-size:13px;color:var(--sub)}
+.stack{display:flex;flex-direction:column;gap:20px}
+a{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<p class="eyebrow">LOTTE AX Challenge 2026 · [과제 3] 프로모션 시뮬레이터 · 시제품</p>
+<h1>PromoPilot 웹 데모</h1>
+<p class="lead">혜택 조건을 바꾸면 예상 주문과 <b>비용을 반영한 순증 이익</b>이 어떻게 달라지는지, 그리고 그 예측을 얼마나 믿을 수 있는지 보여 줍니다.</p>
+</header>
+
+<div class="grid">
+<div class="card">
+<h2>조건 설정</h2>
+<label class="f">상품</label><select id="prod"></select>
+<label class="f">방송 시간대</label><select id="slot"></select>
+<label class="f">요일</label><div class="seg" id="wk"><button data-v="0" class="on">평일</button><button data-v="1">주말</button></div>
+<label class="f">카드 할인율 <span class="rv" id="dv"></span></label><input type="range" id="d" min="0" max="15" step="1" value="7">
+<label class="f">무이자 할부</label><div class="seg" id="inst"><button data-v="0" class="on">없음</button><button data-v="3">3개월</button><button data-v="6">6개월</button></div>
+<label class="f">사은품 (판매가 대비 가치)</label><div class="seg" id="gift"><button data-v="0" class="on">없음</button><button data-v="0.03">3%</button><button data-v="0.05">5%</button></div>
+<label class="f">카드사 할인 비용 분담 <span class="rv" id="sv"></span></label><input type="range" id="share" min="0" max="80" step="10" value="0">
+<label class="f">최소 이익률 <span class="rv" id="mv"></span></label><input type="range" id="minm" min="10" max="30" step="1" value="20">
+<p class="note" style="margin-top:16px">비용 가정: 홈쇼핑 수익률 30%, 할인 카드 결제 비율 80%, 무이자 1개월당 판매가의 0.8%, 사은품은 홈쇼핑 전액 부담</p>
+</div>
+
+<div class="stack">
+<div class="card">
+<h2>선택한 조건의 예상 성과</h2>
+<div class="warn" id="warn"></div>
+<div class="metrics">
+<div class="m"><div class="l">예상 주문</div><div class="v" id="o"></div><div class="s" id="ob"></div></div>
+<div class="m"><div class="l">순증 이익 (혜택 없을 때 대비)</div><div class="v" id="inc"></div><div class="s" id="pb"></div></div>
+<div class="m"><div class="l">이익률</div><div class="v" id="mg"></div><div class="s" id="mgs"></div></div>
+</div>
+<p class="note" id="segline"></p>
+<h2 style="margin-top:18px">할인율별 순증 이익</h2>
+<div id="bars"></div>
+</div>
+
+<div class="card">
+<h2>추천 조합 (후보 54개 전수 계산)</h2>
+<table id="top"></table>
+<p class="note" id="extra"></p>
+</div>
+
+<div class="card">
+<h2>검증: 모델이 심어 둔 정답을 다시 찾아냈는가</h2>
+<p class="note">합성 데이터에 효과 크기(정답)를 미리 정해 두고, 인기 상품·프라임 시간대에 혜택이 몰리는 편향도 넣었습니다. PromoPilot은 정답을 95% 구간 안에서 되찾고, 상품·시간대를 통제하지 않은 단순 비교는 효과를 크게 부풀립니다.</p>
+<table id="rec"></table>
+</div>
+</div>
+</div>
+
+<p class="note" style="margin-top:28px">모든 숫자는 합성 데이터로 학습한 모델의 결과이며, 구현이 정확한지 확인하는 용도입니다. 실제 프로모션 효과 크기를 뜻하지 않습니다. 코드와 테스트: <a href="https://github.com/kimmh2142/promopilot">github.com/kimmh2142/promopilot</a></p>
+</div>
+
+<script>
+const FEAT={f_disc:'카드 할인',f_inst:'무이자 할부',f_gift:'사은품'};
+const D_LEVELS=[0,3,5,7,10,15],M_LEVELS=[0,3,6],G_LEVELS=[0,0.03,0.05];
+const $=id=>document.getElementById(id);
+const won=n=>Math.round(n).toLocaleString('ko-KR');
+const man=n=>(n>=0?'+':'−')+Math.round(Math.abs(n)/10000).toLocaleString('ko-KR')+'만 원';
+let M,state={wk:0,inst:0,gift:0};
+
+function feats(d,m,g){return{f_disc:Math.log1p(d/5),f_inst:m/6,f_gift:g*10}}
+function orders(p,slot,wk,d,m,g){
+  const f=feats(d,m,g);let t=0,by={};
+  for(const s of M.segments){const c=M.model[s.id];
+    let mu=c.product[p.id]+c.slot[slot]+c.weekend*wk;
+    for(const k in f) mu+=c.promo[k]*f[k];
+    by[s.id]=Math.max(0,Math.exp(mu)-1);t+=by[s.id];}
+  return{t,by};
+}
+function profit(p,o,d,m,g,share){
+  const C=M.costs,ns=o*(1-p.return_rate)*p.price;
+  const card=ns*(d/100)*C.card_usage_rate*(1-share);
+  const inst=ns*C.inst_cost_per_month*m*C.inst_share_hs;
+  const gift=o*p.price*g*C.gift_share_hs;
+  const pr=ns*C.margin_rate-(card+inst+gift);
+  return{pr,ns,margin:ns>0?pr/ns:0,cost:card+inst+gift};
+}
+function extrap(p,d,m,g){
+  const r=M.observed_range[p.category],f=[];
+  if(d<r.discount_pct[0]||d>r.discount_pct[1])f.push('할인율 '+d+'%');
+  if(m<r.installment_months[0]||m>r.installment_months[1])f.push('무이자 '+m+'개월');
+  if(g<r.gift_ratio[0]||g>r.gift_ratio[1])f.push('사은품 '+Math.round(g*100)+'%');
+  return f;
+}
+function evalCombo(p,slot,wk,d,m,g,share,base){
+  const o=orders(p,slot,wk,d,m,g),q=profit(p,o.t,d,m,g,share);
+  return{d,m,g,o,q,inc:q.pr-base.pr,ext:extrap(p,d,m,g)};
+}
+function combo(r){return '할인 '+r.d+'% · '+(r.m?'무이자 '+r.m+'개월':'무이자 없음')+' · '+(r.g?'사은품 '+Math.round(r.g*100)+'%':'사은품 없음')}
+
+function render(){
+  const p=M.products.find(x=>x.id===$('prod').value),slot=$('slot').value,wk=state.wk;
+  const d=+$('d').value,m=state.inst,g=state.gift,share=+$('share').value/100,minm=+$('minm').value/100;
+  $('dv').textContent=d+'%';$('sv').textContent=Math.round(share*100)+'%';$('mv').textContent=Math.round(minm*100)+'%';
+  const b0=orders(p,slot,wk,0,0,0),base=profit(p,b0.t,0,0,0,share);
+  const cur=evalCombo(p,slot,wk,d,m,g,share,base);
+  $('o').textContent=won(cur.o.t)+'건';$('ob').textContent='혜택 없을 때 '+won(b0.t)+'건';
+  $('inc').textContent=man(cur.inc);$('inc').style.color=cur.inc>=0?'var(--blue)':'var(--orange)';
+  $('pb').textContent='혜택 비용 '+won(cur.q.cost/10000)+'만 원 포함';
+  $('mg').textContent=(cur.q.margin*100).toFixed(1)+'%';
+  $('mgs').textContent=cur.q.margin<minm?'최소 '+Math.round(minm*100)+'% 미달':'최소 '+Math.round(minm*100)+'% 충족';
+  $('mgs').style.color=cur.q.margin<minm?'var(--orange)':'var(--sub)';
+  $('segline').textContent='고객군별 예상 주문: '+M.segments.map(s=>s.label+' '+won(cur.o.by[s.id])+'건').join(' · ')+' · 판매가 '+won(p.price)+'원';
+  const w=$('warn');if(cur.ext.length){w.style.display='block';w.textContent='학습 범위 밖 조건('+cur.ext.join(', ')+')이라 믿기 어려운 예측이에요. 추천하지 않고 A/B 실험 후보로만 다룹니다.'}else w.style.display='none';
+
+  const rows=D_LEVELS.map(x=>evalCombo(p,slot,wk,x,m,g,share,base));
+  const ok=rows.filter(r=>!r.ext.length&&r.q.margin>=minm);
+  const best=ok.length?ok.reduce((a,c)=>c.inc>a.inc?c:a):null;
+  const mx=Math.max(...rows.map(r=>Math.abs(r.inc)),1);
+  $('bars').innerHTML=rows.map(r=>{
+    const isB=best&&r.d===best.d,ext=r.ext.length>0,low=r.q.margin<minm;
+    const col=isB?'var(--blue)':ext?'transparent':low?'#E3C8BC':'#9AA3B2';
+    const bd=ext?'border:1.5px dashed var(--orange);':'';
+    const tag=isB?' · 추천':ext?' · 범위 밖':low?' · 이익률 미달':'';
+    return '<div class="bar"><span class="k">'+r.d+'%</span><span class="t"><i style="width:'+Math.max(1,Math.abs(r.inc)/mx*100)+'%;background:'+col+';'+bd+'"></i></span><span class="n" style="'+(isB?'color:var(--blue);font-weight:700':'')+'">'+man(r.inc)+tag+'</span></div>';
+  }).join('');
+
+  const all=[];for(const x of D_LEVELS)for(const y of M_LEVELS)for(const z of G_LEVELS)all.push(evalCombo(p,slot,wk,x,y,z,share,base));
+  const feas=all.filter(r=>!r.ext.length&&r.q.margin>=minm).sort((a,b)=>b.inc-a.inc);
+  const top=feas.slice(0,3);
+  $('top').innerHTML='<tr><th>순위</th><th>조합</th><th>예상 주문</th><th>이익률</th><th>순증 이익</th></tr>'+
+    (top.length?top.map((r,i)=>'<tr class="'+(i===0?'best':'')+'"><td>'+(i+1)+'</td><td>'+combo(r)+'</td><td>'+won(r.o.t)+'건</td><td>'+(r.q.margin*100).toFixed(1)+'%</td><td>'+man(r.inc)+'</td></tr>').join(''):'<tr><td colspan="5">조건을 만족하는 조합이 없어요. 최소 이익률을 낮춰 보세요.</td></tr>');
+  const ex=all.filter(r=>r.ext.length&&r.q.margin>=minm).sort((a,b)=>b.inc-a.inc)[0];
+  $('extra').textContent='후보 54개 중 '+feas.length+'개가 제약을 통과했어요.'+((ex&&(!top.length||ex.inc>top[0].inc))?' 참고: '+combo(ex)+'은 '+man(ex.inc)+'로 더 커 보이지만 학습 범위 밖이라 추천에서 뺐어요 (A/B 실험 후보).':'');
+}
+
+function segBtns(id,key){
+  $(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    $(id).querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');state[key]=+b.dataset.v;render();});
+}
+
+fetch('model.json').then(r=>r.json()).then(j=>{
+  M=j;
+  $('prod').innerHTML=M.products.map(p=>'<option value="'+p.id+'">'+p.id+' ('+won(p.price)+'원)</option>').join('');
+  $('prod').value='가전-03';
+  $('slot').innerHTML=M.timeslots.map(t=>'<option value="'+t.id+'">'+t.label+'</option>').join('');
+  $('slot').value='prime';
+  ['prod','slot','d','share','minm'].forEach(id=>$(id).addEventListener('input',render));
+  segBtns('wk','wk');segBtns('inst','inst');segBtns('gift','gift');
+  $('rec').innerHTML='<tr><th>고객군</th><th>혜택</th><th>정답</th><th>PromoPilot (95% 구간)</th><th>단순 비교</th></tr>'+
+    M.recovery.map(r=>'<tr><td>'+r.segment+'</td><td>'+FEAT[r.feature]+'</td><td>'+r.truth.toFixed(2)+'</td><td>'+r.estimate.toFixed(3)+' ('+r.ci[0].toFixed(3)+'~'+r.ci[1].toFixed(3)+')</td><td style="color:var(--orange)">'+r.naive.toFixed(3)+'</td></tr>').join('');
+  render();
+});
+</script>
+</body>
+</html>

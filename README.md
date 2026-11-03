@@ -4,6 +4,8 @@
 
 > LOTTE AX Challenge 2026 · [과제 3] 롯데홈쇼핑 프로모션 시뮬레이터 지원용 시제품
 
+**[웹 데모 바로 보기](https://kimmh2142.github.io/promopilot/)** — 조건을 바꿔 가며 순증 이익과 추천 조합을 직접 확인할 수 있습니다.
+
 편성이 정해진 방송에서 **카드 할인 · 무이자 할부 · 사은품** 조합별로 예상 주문, 매출, **비용을 반영한 순증 이익**을 계산하고, 제약 조건 안에서 최적안을 추천합니다.
 이 시제품의 목적은 화려한 기능이 아니라 **"계산이 정확한지 증명할 수 있는 구조"**를 먼저 만드는 것입니다.
 
@@ -57,6 +59,8 @@ promopilot/
 │   └── agent_tools.py  # LLM 도구 스키마, 도구 실행·입력 검증, 수치 대조
 ├── tests/test_promopilot.py   # 복원·편향·제약·외삽·입력 검증·수치 대조 테스트
 ├── demo.py             # End-to-End 데모 → results/demo_report.md
+├── docs/               # 웹 데모 (GitHub Pages) — index.html, model.json
+├── scripts/export_web.py  # 모델 결과를 웹 데모용 model.json으로 내보내기
 └── requirements.txt
 ```
 
