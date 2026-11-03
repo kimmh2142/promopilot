@@ -1,4 +1,4 @@
-"""PromoPilot 시제품 End-to-End 데모.
+"""PromoPilot 검증용 프로토타입 End-to-End 데모.
 
 실행: python demo.py
 결과: 화면 출력 + results/demo_report.md 저장
@@ -44,7 +44,7 @@ def main():
     # 1) 데이터 -------------------------------------------------------------
     products = make_products(seed=42)
     df = generate_broadcasts(3000, seed=42, products=products)
-    out("# PromoPilot 시제품 데모 결과")
+    out("# PromoPilot 검증용 프로토타입 데모 결과")
     out()
     out(f"- 합성 방송 데이터: {len(df):,}건, 상품 {df.product_id.nunique()}개, 카테고리 {df.category.nunique()}개")
     out("- 혜택은 인기 상품·프라임 시간대에 더 많이 배정되도록 **선택 편향**을 일부러 넣었습니다.")
