@@ -171,7 +171,7 @@ function render(){
   $('top').innerHTML='<tr><th>순위</th><th>조합</th><th>예상 주문</th><th>이익률</th><th>순증 이익</th></tr>'+
     (top.length?top.map((r,i)=>'<tr class="'+(i===0?'best':'')+'"><td>'+(i+1)+'</td><td>'+combo(r)+'</td><td>'+won(r.o.t)+'건</td><td>'+(r.q.margin*100).toFixed(1)+'%</td><td>'+man(r.inc)+'</td></tr>').join(''):'<tr><td colspan="5">조건을 만족하는 조합이 없어요. 최소 이익률을 낮춰 보세요.</td></tr>');
   const ex=all.filter(r=>r.ext.length&&r.q.margin>=minm).sort((a,b)=>b.inc-a.inc)[0];
-  $('extra').textContent='후보 54개 중 '+feas.length+'개가 제약을 통과했어요.'+((ex&&(!top.length||ex.inc>top[0].inc))?' 참고: '+combo(ex)+'은 '+man(ex.inc)+'로 더 커 보이지만 학습 범위 밖이라 추천에서 뺐어요 (A/B 실험 후보).':'');
+  $('extra').textContent='후보 54개 중 '+feas.length+'개가 제약을 통과했어요.'+((ex&&(!top.length||ex.inc>top[0].inc))?' 참고: '+combo(ex)+'은 '+man(ex.inc)+'으로 더 커 보이지만 학습 범위 밖이라 추천에서 뺐어요 (A/B 실험 후보).':'');
 }
 
 function segBtns(id,key){
